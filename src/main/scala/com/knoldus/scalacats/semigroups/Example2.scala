@@ -2,33 +2,30 @@ package com.knoldus.scalacats.semigroups
 
 object Example2 extends App with Data {
 
-  //add money function
-  def addM(money1: Money, money2: Money): Money = {
-    Money(money1.dollars + money2.dollars + ((money1.cents + money2.cents) / 100),
-      (money1.cents + money2.cents) % 100)
+  def addM(a: Money, b: Money): Money = {
+    Money((a.dollars + b.dollars) + (a.cents + b.cents) / 100,
+      (a.cents + b.cents) % 100)
   }
 
-  trait Addable[T] {
+  trait Addable [T] {
     def add(a: T, b: T): T
   }
 
-  def add[X, Y](balances: Map[X, Y], addMap: Map[X, Y])
-               (implicit addable: Addable[Y]): Map[X, Y] = {
-    balances.foldLeft(addMap) {
-      case (acc, (x, y)) =>
-        acc + (x -> acc.get(x).map(addable.add(_, y)).getOrElse(y))
+  def addMap[K, V: Addable](balances: Map[K, V], map: Map[K, V])(implicit addable: Addable[V]): Map[K, V] = {
+    balances.foldLeft(map) {
+      case (acc, (k, v)) =>
+        acc + (k -> acc.get(k).fold(v)(addable.add(_, v)))
     }
   }
-
-  println(s"Salary credit in you account xxxxxxx ${addM(balance, salary)}")
 
   implicit val addMoney = new Addable[Money] {
     override def add(a: Money, b: Money): Money = addM(a, b)
   }
-  println(s"Salary transfer to all employees ${add(balances, salaries)}")
 
   implicit val addInt = new Addable[Int] {
     override def add(a: Int, b: Int): Int = a + b
   }
-  println(s"Your game marbles balance is: ${add(marbles, won)}")
+
+  println(s" Salary credit into you account ${addMap(balances, salaries)}")
+  println(s" Add marbles to you game account ${addMap(marbles, won)}")
 }

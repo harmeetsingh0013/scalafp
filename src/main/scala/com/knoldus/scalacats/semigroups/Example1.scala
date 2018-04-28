@@ -2,29 +2,25 @@ package com.knoldus.scalacats.semigroups
 
 object Example1 extends App with Data {
 
-  //add money function
-  def add(money1: Money, money2: Money): Money = {
-    Money(money1.dollars + money2.dollars + ((money1.cents + money2.cents) / 100),
-      (money1.cents + money2.cents) % 100)
+  def add(a: Money, b: Money): Money = {
+    Money((a.dollars + b.dollars) + (a.cents + b.cents) / 100,
+      (a.cents + b.cents) % 100)
   }
 
-  // add salary to account current balance
-  def addMoneyMap(balances: Map[String, Money], salary: Map[String, Money]): Map[String, Money] = {
-    balances.foldLeft(salaries){
+  def creditSalary(balances: Map[String, Money], salary: Map[String, Money]): Map[String, Money] = {
+    balances.foldLeft(salary) {
       case (acc, (name, money)) =>
-        acc + (name -> acc.get(name).map(add(_ , money)).getOrElse(money))
+        acc + (name -> acc.get(name).fold(money)(add(_, money)))
     }
   }
 
-  // add wining marbel into existing balance
-  def addMarbleMap(balances: Map[String, Int], wining: Map[String, Int]): Map[String, Int] = {
-    balances.foldLeft(wining) {
-      case (acc, (name, marble)) =>
-        acc + (name -> acc.get(name).map(_ + marble).getOrElse(marble))
+  def addMarbles(balances: Map[String, Int], winning: Map[String, Int]): Map[String, Int] = {
+    balances.foldLeft(winning) {
+      case (acc, (name, marbels)) =>
+        acc + (name -> acc.get(name).fold(marbels)(_ + marbels))
     }
   }
 
-  println(s"Salary credit in you account xxxxxxx ${add(balance, salary)}")
-  println(s"Salary transfer to all employees ${addMoneyMap(balances, salaries)}")
-  println(s"Your game marbles balance is: ${addMarbleMap(marbles, won)}")
+  println(s" Salary credit into you account ${creditSalary(balances, salaries)}")
+  println(s" Add marbles to you game account ${addMarbles(marbles, won)}")
 }
