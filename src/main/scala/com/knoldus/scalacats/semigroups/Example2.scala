@@ -11,8 +11,8 @@ object Example2 extends App with Data {
     def add(a: T, b: T): T
   }
 
-  def addMap[K, V: Addable](balances: Map[K, V], map: Map[K, V])(implicit addable: Addable[V]): Map[K, V] = {
-    balances.foldLeft(map) {
+  def addMaps[K, V](balance: Map[K, V], newMap: Map[K, V])(implicit addable: Addable[V]): Map[K, V] = {
+    balance.foldLeft(newMap) {
       case (acc, (k, v)) =>
         acc + (k -> acc.get(k).fold(v)(addable.add(_, v)))
     }
@@ -26,6 +26,6 @@ object Example2 extends App with Data {
     override def add(a: Int, b: Int): Int = a + b
   }
 
-  println(s" Salary credit into you account ${addMap(balances, salaries)}")
-  println(s" Add marbles to you game account ${addMap(marbles, won)}")
+  println(s" Credit salary to you account ${addMaps(balances, salaries)}")
+  println(s" Add marbles tou your game account ${addMaps(marbles, won)}")
 }

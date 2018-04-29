@@ -3,27 +3,27 @@ package com.knoldus.scalacats.monoids
 object Example1 extends App {
 
   trait Monoid[A] {
-    def combine(x: A, y: A): A
+    def combine(a: A, b: A): A
     def empty: A
   }
 
-  def associativeLaw[A](x: A, y: A, z: A)(implicit M: Monoid[A]): Boolean = {
-    M.combine(x, M.combine(y, z)) == M.combine(M.combine(x, y), z)
+  def associativeLaw[A](x: A, y: A, z: A)(implicit monoid: Monoid[A]): Boolean = {
+    monoid.combine(x, monoid.combine(y, z)) == monoid.combine(monoid.combine(x, y), z)
   }
 
-  def identifyLaw[A](x: A)(implicit M: Monoid[A]): Boolean = {
-    (M.combine(x, M.empty) == x) && (M.combine(M.empty, x) == x)
+  def identityLaw[A](x: A)(implicit monoid: Monoid[A]) : Boolean = {
+    (monoid.combine(x, monoid.empty) == x) && (monoid.combine(monoid.empty, x) == x)
   }
 
-  implicit val implicitMonoid = new Monoid[Int] {
-    override def combine(x: Int, y: Int): Int = x + y
+  implicit val intMonoid = new Monoid[Int] {
+    override def combine(a: Int, b: Int): Int = a + b
 
     override def empty: Int = 0
   }
 
-  val assResult = associativeLaw(2, 3, 5)
-  val identResult = identifyLaw(4)
+  val result1 = associativeLaw(2, 4, 5)
+  val result2 = identityLaw(4)
 
-  println(s"Associative Law: $assResult")
-  println(s"Identify Law: $identResult")
+  assert(result1 == true)
+  assert(result2 == true)
 }

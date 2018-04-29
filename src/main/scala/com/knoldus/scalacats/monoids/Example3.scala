@@ -7,28 +7,19 @@ import cats.syntax.semigroup._
 
 object Example3 extends App {
 
-  // without monoids
-  def addWithoutMonoid(items: List[Option[Int]]): Option[Int] = {
-    items.fold(Some(0)){
-      case (acc, value) => value match {
-        case Some(i) => acc.map(_ + i)
-        case None => acc
-      }
+  def addWithoutMonoid(list: List[Option[Int]]): Option[Int] = {
+    list.foldLeft(Option(0)){
+      case (acc, value) => acc.map(i => value.fold(i)( _ + i ))
     }
   }
 
-  // with moinoids
-  def addWithMonoid(items: List[Option[Int]]): Option[Int] = {
-    items.fold(Monoid[Option[Int]].empty)(_ |+| _)
+  def addWithMonoid(list: List[Option[Int]]): Option[Int] = {
+    list.foldLeft(Monoid.empty[Option[Int]])(_ |+| _)
   }
 
-  val resultWithoutMonoid = addWithoutMonoid(List(Some(1), Some(2), None, None, Some(5), Some(6)))
-  val resultWithMonoid = addWithMonoid(List(Some(1), Some(2), None, None, Some(5), Some(6)))
+  val result1 = addWithoutMonoid(List(Some(1), Some(8), Some(7), Some(5)))
+  val result2 = addWithMonoid(List(Some(1), Some(8), Some(7), Some(5)))
 
-  println(s"Without Monoids: $resultWithoutMonoid")
-  println(s"With Monoids: $resultWithMonoid")
-
-  // edge case
-  val result = addWithMonoid(List(Some(1), Some(2), Some(3), Some(4), Some(5), Some(6)))
-  println(s"Expecting Compile time Error: $result")
+  println(s" Reuslt is: ${result1}")
+  assert(result1 == result2)
 }

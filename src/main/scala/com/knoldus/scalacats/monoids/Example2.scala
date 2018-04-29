@@ -6,19 +6,17 @@ import cats.syntax.semigroup._
 
 object Example2 extends App {
 
-  // without monoids
-  def addWithoutMonoids(items: List[Int]): Int = {
-    items.foldLeft(0)(_ + _)
+  def addWithoutMonoid(list: List[Int]): Int = {
+    list.foldLeft(0) (_ + _)
   }
 
-  // with monoids
-  def addWithMonoids(items: List[Int]): Int = {
-    items.foldLeft(Monoid[Int].empty)(_ |+| _)
+  def addWithMonoid(list: List[Int]): Int = {
+    list.foldLeft(Monoid.empty[Int]) (_ |+| _)
   }
 
-  val resultWithoutMonoid = addWithoutMonoids(List(1, 2, 3, 4, 5, 6))
-  val resultWithMonoid = addWithMonoids(List(1, 2, 3, 4, 5, 6))
+  val result1 = addWithoutMonoid(List(1, 3, 4, 5, 6, 7, 8, 6))
+  val result2 = addWithMonoid(List(1, 3, 4, 5, 6, 7, 8, 6))
 
-  println(s"Without Monoids: $resultWithoutMonoid")
-  println(s"With Monoids: $resultWithMonoid")
+  println(s" Reuslt is: ${result1}")
+  assert(result1 == result2)
 }
