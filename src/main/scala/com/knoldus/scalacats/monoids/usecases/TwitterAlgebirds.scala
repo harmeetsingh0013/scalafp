@@ -10,31 +10,31 @@ val vikas = TwitterUser("vhazrati", 387)
 val dzone = TwitterUser("dzone", 10640)
 val scala = TwitterUser("scala_lang", 20421)
 
-val winner: Max[TwitterUser] = Max(barackobama) + Max(katyperry) + Max(ladygaga) + Max(miguno) + Max(taylorswift)
-assert(winner.get == katyperry)
+val winner: Max = Max(harmeetsingh) + Max(knoldus) + Max(vikas) + Max(dzone) + Max(scala)
+assert(winner.twitterUser == scala)
 
 */
 
 object TwitterAlgebirds extends App {
 
-  case class TwitterUser(username: String, followers: Int) extends Ordered[TwitterUser] {
+  case class TwitterUser(name: String, followers: Int) extends Ordered[TwitterUser] {
     override def compare(that: TwitterUser): Int = {
-      val c = this.followers - that.followers
-      if(c == 0) this.username.compareTo(that.username) else c
+      val count = this.followers - that.followers
+      if(count == 0) this.name.compareTo(that.name) else count
     }
   }
 
   implicit val twitterUserMonoid = new Monoid[TwitterUser] {
-    override def empty: TwitterUser = TwitterUser("MinUser", Int.MinValue)
+    override def empty: TwitterUser = TwitterUser("MinUsers", Int.MinValue)
 
     override def combine(x: TwitterUser, y: TwitterUser): TwitterUser = {
-      if(x.compareTo(y) >= 1) x else y
+      if(x >= y) x else y
     }
   }
 
-  case class Max(user: TwitterUser) {
-    def +(usr: Max)(implicit m: Monoid[TwitterUser]): Max = {
-      Max(m.combine(this.user, usr.user))
+  case class Max(twitterUser: TwitterUser) {
+    def +(max: Max)(implicit M: Monoid[TwitterUser]): Max = {
+      Max(M.combine(this.twitterUser, max.twitterUser))
     }
   }
 
@@ -46,6 +46,6 @@ object TwitterAlgebirds extends App {
 
   val winner: Max = Max(harmeetsingh) + Max(knoldus) + Max(vikas) + Max(dzone) + Max(scala)
 
-  println(s"Winner Is: $winner")
-  assert(winner.user == scala)
+  println(s" Winner: ${winner}")
+  assert(winner.twitterUser == scala)
 }
